@@ -13,6 +13,8 @@ using Microsoft.Extensions.Logging;
 using MassTransit;
 using Sample.Components.Consumers;
 using Sample.Contracts;
+using MassTransit.Definition;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Sample.API
 {
@@ -28,13 +30,14 @@ namespace Sample.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.TryAddSingleton(KebabCaseEndpointNameFormatter.Instance);
             services.AddMassTransit(cfg =>
             {
-                cfg.AddConsumer<SubmitOrderConsumer>();
-
-                cfg.AddMediator();
+                cfg.AddBus(provider => Bus.Factory.CreateUsingRabbitMq());
                 cfg.AddRequestClient<SubmitOrder>();
             });
+            services.AddMassTransitHostedService();
+
             services.AddOpenApiDocument(cfg => cfg.PostProcess = d => d.Info.Title = "Sample API Site");
             services.AddControllers();
         }
