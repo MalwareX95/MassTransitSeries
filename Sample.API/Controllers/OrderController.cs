@@ -16,13 +16,16 @@ namespace Sample.API.Controllers
     {
         private readonly ILogger<OrderController> logger;
         private readonly IRequestClient<SubmitOrder> submitOrderRequestClient;
+        private readonly ISendEndpointProvider sendEndpointProvider;
 
         public OrderController(
             ILogger<OrderController> logger,
-            IRequestClient<SubmitOrder> submitOrderRequestClient)
+            IRequestClient<SubmitOrder> submitOrderRequestClient,
+            ISendEndpointProvider sendEndpointProvider)
         {
             this.logger = logger;
             this.submitOrderRequestClient = submitOrderRequestClient;
+            this.sendEndpointProvider = sendEndpointProvider;
         }
 
         [HttpPost]
@@ -45,6 +48,21 @@ namespace Sample.API.Controllers
                 var response = await rejected;
                 return BadRequest(response.Message);
             }
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> Put(Guid id, string customerNumber)
+        {
+            var endpoint = await sendEndpointProvider.GetSendEndpoint(new Uri("exchange:submit-order"));
+
+            await endpoint.Send<SubmitOrder>(new
+            {
+                OrderId = id,
+                InVar.Timestamp,
+                CustomerNumber = customerNumber
+            });
+
+            return Accepted();
         }
 
     }

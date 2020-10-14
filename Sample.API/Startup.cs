@@ -34,7 +34,8 @@ namespace Sample.API
             services.AddMassTransit(cfg =>
             {
                 cfg.AddBus(provider => Bus.Factory.CreateUsingRabbitMq());
-                cfg.AddRequestClient<SubmitOrder>();
+                cfg.AddRequestClient<SubmitOrder>(new Uri($"exchange:{KebabCaseEndpointNameFormatter.Instance.Consumer<SubmitOrderConsumer>()}"));
+                //cfg.AddRequestClient<SubmitOrder>();
             });
             services.AddMassTransitHostedService();
 

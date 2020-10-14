@@ -24,22 +24,28 @@ namespace Sample.Components.Consumers
 
             if (context.Message.CustomerNumber.Contains("TEST"))
             {
-                await context.RespondAsync<OrderSubmissionRejected>(new
+                if (context.RequestId != null)
                 {
-                    InVar.Timestamp,
-                    context.Message.OrderId,
-                    context.Message.CustomerNumber,
-                    Reason = $"Test Customer cannot submit orders {context.Message.CustomerNumber}"
-                });
+                    await context.RespondAsync<OrderSubmissionRejected>(new
+                    {
+                        InVar.Timestamp,
+                        context.Message.OrderId,
+                        context.Message.CustomerNumber,
+                        Reason = $"Test Customer cannot submit orders {context.Message.CustomerNumber}"
+                    });
+                }
                 return;
             }
 
-            await context.RespondAsync<OrderSubmissionAccepted>(new
+            if (context.RequestId != null)
             {
-                InVar.Timestamp,
-                context.Message.OrderId,
-                context.Message.CustomerNumber
-            });
+                await context.RespondAsync<OrderSubmissionAccepted>(new
+                {
+                    InVar.Timestamp,
+                    context.Message.OrderId,
+                    context.Message.CustomerNumber
+                });
+            }
         }
     }
 }
