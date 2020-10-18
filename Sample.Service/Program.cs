@@ -11,6 +11,8 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using GreenPipes;
+
 
 namespace Sample.Service
 {
@@ -36,7 +38,7 @@ namespace Sample.Service
                     {
                         cfg.AddConsumersFromNamespaceContaining<SubmitOrderConsumer>();
                         cfg
-                            .AddSagaStateMachine<OrderStateMachine, OrderState>()
+                            .AddSagaStateMachine<OrderStateMachine, OrderState>(typeof(OrderStateMachineDefinition))
                             .RedisRepository();
                         cfg.AddBus(ConfigureBus);
                     });
@@ -61,6 +63,10 @@ namespace Sample.Service
             return Bus.Factory.CreateUsingRabbitMq(cfg =>
             {
                 cfg.ConfigureEndpoints(provider);
+                //cfg.ReceiveEndpoint("something-else", e =>
+                //{
+                //    e.UseMessageRetry(r => r.Exponential(10, TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(3)));
+                //});
             });
         }
 
