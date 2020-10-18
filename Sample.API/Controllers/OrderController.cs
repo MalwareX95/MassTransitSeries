@@ -17,15 +17,38 @@ namespace Sample.API.Controllers
         private readonly ILogger<OrderController> logger;
         private readonly IRequestClient<SubmitOrder> submitOrderRequestClient;
         private readonly ISendEndpointProvider sendEndpointProvider;
+        private readonly IRequestClient<CheckOrder> checkOrderClient;
 
         public OrderController(
             ILogger<OrderController> logger,
             IRequestClient<SubmitOrder> submitOrderRequestClient,
-            ISendEndpointProvider sendEndpointProvider)
+            ISendEndpointProvider sendEndpointProvider,
+            IRequestClient<CheckOrder> checkOrderClient)
         {
             this.logger = logger;
             this.submitOrderRequestClient = submitOrderRequestClient;
             this.sendEndpointProvider = sendEndpointProvider;
+            this.checkOrderClient = checkOrderClient;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Get(Guid id)
+        {
+            var (status, notFound) = await checkOrderClient.GetResponse<OrderStatus, OrderNotFound>(new
+            {
+                OrderId = id
+            });
+
+            if (status.IsCompletedSuccessfully)
+            {
+                var response = await status;
+                return Ok(response.Message);
+            }
+            else
+            {
+                var response = await notFound;
+                return NotFound(response.Message);
+            }
         }
 
         [HttpPost]

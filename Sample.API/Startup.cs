@@ -36,9 +36,10 @@ namespace Sample.API
                 cfg.AddBus(provider => Bus.Factory.CreateUsingRabbitMq());
                 cfg.AddRequestClient<SubmitOrder>(new Uri($"exchange:{KebabCaseEndpointNameFormatter.Instance.Consumer<SubmitOrderConsumer>()}"));
                 //cfg.AddRequestClient<SubmitOrder>();
+
+                cfg.AddRequestClient<CheckOrder>();
             });
             services.AddMassTransitHostedService();
-
             services.AddOpenApiDocument(cfg => cfg.PostProcess = d => d.Info.Title = "Sample API Site");
             services.AddControllers();
         }
@@ -51,7 +52,7 @@ namespace Sample.API
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
             app.UseOpenApi();
             app.UseSwaggerUi3();
 
