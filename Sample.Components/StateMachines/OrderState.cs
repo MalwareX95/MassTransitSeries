@@ -1,5 +1,6 @@
 ﻿using Automatonymous;
-using MassTransit.RedisIntegration;
+using MassTransit.MongoDbIntegration.Saga;
+using MongoDB.Bson.Serialization.Attributes;
 using System;
 
 namespace Sample.Components.StateMachines
@@ -8,6 +9,7 @@ namespace Sample.Components.StateMachines
         SagaStateMachineInstance,
         IVersionedSaga
     {
+        [BsonId]
         public Guid CorrelationId { get; set; }
         public string CurrentState { get; set; }
         public string CustomerNumber { get; set; }

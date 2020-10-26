@@ -12,7 +12,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using GreenPipes;
-
+using MassTransit.MongoDbIntegration;
 
 namespace Sample.Service
 {
@@ -39,7 +39,11 @@ namespace Sample.Service
                         cfg.AddConsumersFromNamespaceContaining<SubmitOrderConsumer>();
                         cfg
                             .AddSagaStateMachine<OrderStateMachine, OrderState>(typeof(OrderStateMachineDefinition))
-                            .RedisRepository();
+                            .MongoDbRepository(r =>
+                            {
+                                r.Connection = "mongodb://127.0.0.1";
+                                r.DatabaseName = "orderdb";
+                            });
                         cfg.AddBus(ConfigureBus);
                     });
 
