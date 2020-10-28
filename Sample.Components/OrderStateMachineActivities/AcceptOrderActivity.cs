@@ -1,5 +1,6 @@
 ﻿using Automatonymous;
 using GreenPipes;
+using MassTransit;
 using Sample.Components.StateMachines;
 using Sample.Contracts;
 using System;
@@ -20,6 +21,15 @@ namespace Sample.Components.OrderStateMachineActivities
         public async Task Execute(BehaviorContext<OrderState, OrderAccepted> context, Behavior<OrderState, OrderAccepted> next)
         {
             Console.WriteLine("Hello world, Order is {0}", context.Data.OrderId);
+            var consumeContext = context.GetPayload<ConsumeContext>();
+
+            var sendEndpoint = await consumeContext.GetSendEndpoint(new Uri("exchange:fulfill-order"));
+
+            await sendEndpoint.Send<FulfillOrder>(new
+            {
+                context.Data.OrderId
+            });
+
             await next.Execute(context).ConfigureAwait(false);
         }
 

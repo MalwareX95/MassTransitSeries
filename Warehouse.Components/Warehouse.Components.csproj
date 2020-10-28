@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -8,13 +8,10 @@
   <ItemGroup>
     <PackageReference Include="MassTransit" Version="6.2.3" />
     <PackageReference Include="MassTransit.Analyzers" Version="6.2.3" />
-    <PackageReference Include="MassTransit.MongoDb" Version="6.2.3" />
-    <PackageReference Include="MassTransit.Redis" Version="6.2.3" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Sample.Contracts\Sample.Contracts.csproj" />
     <ProjectReference Include="..\Warehouse.Contracts\Warehouse.Contracts.csproj" />
   </ItemGroup>
-
+  
 </Project>

@@ -18,17 +18,20 @@ namespace Sample.API.Controllers
         private readonly IRequestClient<SubmitOrder> submitOrderRequestClient;
         private readonly ISendEndpointProvider sendEndpointProvider;
         private readonly IRequestClient<CheckOrder> checkOrderClient;
+        private readonly IPublishEndpoint publishEndpoint;
 
         public OrderController(
             ILogger<OrderController> logger,
             IRequestClient<SubmitOrder> submitOrderRequestClient,
             ISendEndpointProvider sendEndpointProvider,
-            IRequestClient<CheckOrder> checkOrderClient)
+            IRequestClient<CheckOrder> checkOrderClient,
+            IPublishEndpoint publishEndpoint)
         {
             this.logger = logger;
             this.submitOrderRequestClient = submitOrderRequestClient;
             this.sendEndpointProvider = sendEndpointProvider;
             this.checkOrderClient = checkOrderClient;
+            this.publishEndpoint = publishEndpoint;
         }
 
         [HttpGet]
@@ -83,6 +86,18 @@ namespace Sample.API.Controllers
                 OrderId = id,
                 InVar.Timestamp,
                 CustomerNumber = customerNumber
+            });
+
+            return Accepted();
+        }
+
+        [HttpPatch]
+        public async Task<IActionResult> Patch(Guid id)
+        {
+            await publishEndpoint.Publish<OrderAccepted>(new
+            {
+                OrderId = id,
+                InVar.Timestamp
             });
 
             return Accepted();
